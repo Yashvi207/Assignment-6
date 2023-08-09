@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const bcrypt = require('bcryptjs');
 const Schema = mongoose.Schema;
 
-// Creating a schema for our database
 const userSchema = new Schema({
     "userName": {
         type: String,
@@ -18,10 +17,8 @@ const userSchema = new Schema({
     ]
 });
 
-// Using the schema to create a user object
 let User;
 
-// => Ensures that we are able to connect to our MongoDB instance before we can start our application
 function initialize() {
     return new Promise((resolve, reject) => {
         // Creating a connection
@@ -39,7 +36,6 @@ function initialize() {
     })
 }
 
-// => Saves users to the database after performing data validation
 function registerUser(userData) {
     return new Promise((resolve, reject) => {
         if (userData.password !== userData.password2) {
@@ -69,7 +65,6 @@ function registerUser(userData) {
     })
 }
 
-// => Checks if the user's login credentials are right
 function checkUser(userData) {
     return new Promise((resolve, reject) => {
         User.find({ "userName": userData.userName }).exec()
@@ -77,7 +72,6 @@ function checkUser(userData) {
             if (users.length === 0) {
                 reject(`Unable to find user: ${userData.userName}`);
             } else {
-                // Checking if the passwords match
                 bcrypt.compare(userData.password, users[0].password).then((result) => {
                     if (result === true) {
                         resolve(users[0]);
@@ -85,12 +79,10 @@ function checkUser(userData) {
                         reject(`Incorrect Password for user: ${userData.userName}`);
                     }
                  });
-                 // Updating the login history if everything passes validation
                 users[0].loginHistory.push({
                     "dateTime": new Date().toString(),
                     "userAgent": userData.userAgent
                 })
-                // Updating the user database
                 User.updateOne(
                     { "userName": users[0].userName },
                     { "$set": {"loginHistory": users[0].loginHistory} },
@@ -107,7 +99,6 @@ function checkUser(userData) {
     })
 }
 
-// Exporting the functions
 module.exports = {
     initialize,
     registerUser,
