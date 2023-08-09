@@ -1,7 +1,6 @@
 const Sequelize = require("sequelize");
 const { gte } = Sequelize.Op;
 
-// set up sequelize to point to our postgres database
 var sequelize = new Sequelize(
   "tgxufbkt",
   "tgxufbkt",
@@ -17,7 +16,6 @@ var sequelize = new Sequelize(
   }
 );
 
-// Defining the Post Model
 const Post = sequelize.define("Post", {
   body: Sequelize.TEXT,
   title: Sequelize.STRING,
@@ -26,17 +24,13 @@ const Post = sequelize.define("Post", {
   published: Sequelize.BOOLEAN,
 });
 
-// Defining the Category Model
 const Category = sequelize.define("Category", {
   category: Sequelize.STRING,
 });
 
-// This will ensure that our Post model gets a "category" column that will act as a foreign key to the Category model
 Post.belongsTo(Category, { foreignKey: "category" });
 
-// => Read the posts.json and categories.json files and store the data in global arrays
 function initialize() {
-  // Ensures that the categories file is read and assigned first before usage
   return new Promise((resolve, reject) => {
     sequelize
       .sync()
@@ -49,7 +43,6 @@ function initialize() {
   });
 }
 
-// => Provides full array of "posts" objects
 function getAllPosts() {
   return new Promise((resolve, reject) => {
     Post.findAll()
@@ -62,7 +55,6 @@ function getAllPosts() {
   });
 }
 
-// => Provides an array of "post" objects whose published property is true
 function getPublishedPosts() {
   return new Promise((resolve, reject) => {
     Post.findAll({
@@ -79,7 +71,6 @@ function getPublishedPosts() {
   });
 }
 
-// => Provides an array of "post" objects whose published property is true and finds posts by category
 function getPublishedPostsByCategory(category) {
   return new Promise((resolve, reject) => {
     Post.findAll({
@@ -97,7 +88,6 @@ function getPublishedPostsByCategory(category) {
   });
 }
 
-// => Provides full array of "category" objects
 function getCategories() {
   return new Promise((resolve, reject) => {
     Category.findAll()
@@ -110,7 +100,6 @@ function getCategories() {
   });
 }
 
-// => Finds a post using its ID
 function getPostById(id) {
   return new Promise((resolve, reject) => {
     Post.findAll({
@@ -127,7 +116,6 @@ function getPostById(id) {
   });
 }
 
-// => Find posts by category
 function getPostsByCategory(category) {
   return new Promise((resolve, reject) => {
     Post.findAll({
@@ -145,7 +133,6 @@ function getPostsByCategory(category) {
   });
 }
 
-// => Find posts that have a date greater than the specified minimum date
 function getPostsByMinDate(minDate) {
   return new Promise((resolve, reject) => {
     Post.findAll({
@@ -164,23 +151,18 @@ function getPostsByMinDate(minDate) {
   });
 }
 
-// => Adds a new post
 function addPost(postData) {
   return new Promise((resolve, reject) => {
-    // Ensure published property is set correctly
     postData.published = postData.published ? true : false;
 
-    // Making sure that the empty values are null
     for (const i in postData) {
       if (postData[i] === "") {
         postData[i] = null;
       }
     }
 
-    // Setting the date
     postData.postDate = new Date();
 
-    // Create a new Post using the postData
     Post.create(postData)
       .then(() => {
         resolve();
@@ -191,7 +173,6 @@ function addPost(postData) {
   });
 }
 
-// => Adds a new category
 function addCategory(categoryData) {
   return new Promise((resolve, reject) => {
     for (let i in categoryData) {
@@ -210,7 +191,6 @@ function addCategory(categoryData) {
   });
 }
 
-// => Deletes a category by id
 function deleteCategoryById(id) {
   return new Promise((resolve, reject) => {
     Category.destroy({
@@ -227,7 +207,6 @@ function deleteCategoryById(id) {
   });
 }
 
-// => Deletes a post by id
 function deletePostById(id) {
   return new Promise((resolve, reject) => {
     Post.destroy({
